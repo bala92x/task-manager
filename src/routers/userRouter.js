@@ -14,6 +14,10 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.post('/login', async (req, res) => {
+
+});
+
 router.get('/', async (req, res) => {
     try {
         const users = await User.find({});
@@ -50,15 +54,17 @@ router.patch('/:id', async (req, res) => {
     }
 
     try {
-        const user = await User.findByIdAndUpdate(_id, req.body, {
-            new: true,
-            runValidators: true
-        });
-
+        const user = await User.findById(req.params.id);
+        
         if (!user) {
             return res.status(404).send();
         }
 
+        updates.forEach((update) => {
+            user[update] = req.body[update];
+        });
+
+        await user.save();
         res.send(user);
     } catch (err) {
         res.status(400).send(err);
