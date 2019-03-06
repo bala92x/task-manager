@@ -15,7 +15,14 @@ router.post('/', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
 
+    try {
+        const user = await User.findByCredentials(email, password);
+        res.send(user);
+    } catch (err) {
+        res.status(400).send();
+    }
 });
 
 router.get('/', async (req, res) => {
