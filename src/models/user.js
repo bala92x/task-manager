@@ -40,8 +40,24 @@ const UserSchema = new mongoose.Schema({
                 throw new Error('Age must be a positive number');
             }
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 });
+
+UserSchema.methods.generateAuthToken = async function() {
+    const user = this;
+    const token = await jwt.sign({ _id: user._id.toString() }, 'verysecret');
+
+    user.tokens = user.tokens.concat({ token });
+    await user.save();
+
+    return token;
+};
 
 UserSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email });
