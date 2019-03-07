@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
         await task.save();
         res.status(201).send(task);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send();
     }
 });
 
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
         const task = await Task.find({});
         res.send(task);
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send();
     }
 });
 
@@ -37,7 +37,7 @@ router.get('/:id', async (req, res) => {
 
         res.send(task);
     } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send();
     }
 });
 
@@ -65,7 +65,7 @@ router.patch('/:id', async (req, res) => {
         await task.save();
         res.send(task);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).send();
     }
 });
 
