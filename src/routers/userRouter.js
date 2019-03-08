@@ -103,6 +103,9 @@ const upload = multer({
 });
 
 router.post('/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).send({ error: 'Image must be provided.' });
+    }
     const avatar = req.file.buffer;
     const avatarInfo = bufferType(avatar);
     const imageCheckRegex = /\.(jpg|jpeg|png|gif|webp)$/i;
@@ -123,6 +126,22 @@ router.delete('/me/avatar', auth, async (req, res) => {
     req.user.avatar = undefined;
     await req.user.save();
     res.send();
+});
+
+router.get('/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user || !user.avatar) {
+            throw new Error();
+        }
+
+        const avatarContentType = bufferType(user.avatar).type;
+        
+        res.set('Content-Type', avatarContentType).send(user.avatar);
+    } catch (err) {
+        res.status(404).send();
+    }
 });
 
 module.exports = router;
