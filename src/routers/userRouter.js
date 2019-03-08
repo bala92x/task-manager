@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const bufferType = require('buffer-type');
 
 const User = require('./../models/user');
 const auth = require('./../middleware/auth');
@@ -89,7 +90,6 @@ router.delete('/me', auth, async (req, res) => {
 });
 
 const upload = multer({
-    dest: 'avatars',
     limits: {
         fileSize: 1000000
     },
@@ -102,10 +102,27 @@ const upload = multer({
     }
 });
 
-router.post('/me/avatar', upload.single('avatar'), (req, res) => {
+router.post('/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+    const avatar = req.file.buffer;
+    const avatarInfo = bufferType(avatar);
+    const imageCheckRegex = /\.(jpg|jpeg|png|gif|webp)$/i;
+    const isImage = typeof avatarInfo !== 'undefined' && imageCheckRegex.test(avatarInfo.extension);
+
+    if (!isImage) {
+        return res.status(400).send({ error: 'File must be an image.' });
+    }
+
+    req.user.avatar = req.file.buffer;
+    await req.user.save();
     res.send();
 }, (err, req, res, next) => {
     res.status(400).send({ error: err.message });
+});
+
+router.delete('/me/avatar', auth, async (req, res) => {
+    req.user.avatar = undefined;
+    await req.user.save();
+    res.send();
 });
 
 module.exports = router;
