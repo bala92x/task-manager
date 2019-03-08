@@ -94,14 +94,18 @@ const upload = multer({
         fileSize: 1000000
     },
     fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+            return cb(new Error('File must be an image.'));
+        }
 
-/*         cb(new Error('File must be an image.'));
-        cb(undefined, true); */
+        cb(undefined, true);
     }
 });
 
 router.post('/me/avatar', upload.single('avatar'), (req, res) => {
     res.send();
+}, (err, req, res, next) => {
+    res.status(400).send({ error: err.message });
 });
 
 module.exports = router;
