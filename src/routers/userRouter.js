@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const bufferType = require('buffer-type');
+const sharp = require('sharp');
 
 const User = require('./../models/user');
 const auth = require('./../middleware/auth');
@@ -106,8 +107,8 @@ router.post('/me/avatar', auth, upload.single('avatar'), async (req, res) => {
     if (!req.file) {
         return res.status(400).send({ error: 'Image must be provided.' });
     }
-    const avatar = req.file.buffer;
-    const avatarInfo = bufferType(avatar);
+    const avatarBuffer = req.file.buffer;
+    const avatarInfo = bufferType(avatarBuffer);
     const imageCheckRegex = /\.(jpg|jpeg|png|gif|webp)$/i;
     const isImage = typeof avatarInfo !== 'undefined' && imageCheckRegex.test(avatarInfo.extension);
 
@@ -115,7 +116,15 @@ router.post('/me/avatar', auth, upload.single('avatar'), async (req, res) => {
         return res.status(400).send({ error: 'File must be an image.' });
     }
 
-    req.user.avatar = req.file.buffer;
+    const croppedAvatar = await sharp(avatarBuffer)
+        .resize({
+            width: 250,
+            height: 250
+        })
+        .png()
+        .toBuffer();
+
+    req.user.avatar = croppedAvatar;
     await req.user.save();
     res.send();
 }, (err, req, res, next) => {
@@ -135,10 +144,8 @@ router.get('/:id/avatar', async (req, res) => {
         if (!user || !user.avatar) {
             throw new Error();
         }
-
-        const avatarContentType = bufferType(user.avatar).type;
         
-        res.set('Content-Type', avatarContentType).send(user.avatar);
+        res.set('Content-Type', 'image/png').send(user.avatar);
     } catch (err) {
         res.status(404).send();
     }
