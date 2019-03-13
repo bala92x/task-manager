@@ -3,6 +3,21 @@ Node.js task manager API with JWT authorization.
 
 Most of the source code is part of [The Complete Node.js Developer Course](https://www.udemy.com/the-complete-nodejs-developer-course-2) by [Andrew Mead](https://github.com/andrewjmead)
 
+## Config
+The application expects the following environment variables:
+
+```
+PORT
+MONGODB_URL
+JWT_SECRET
+FROM_EMAIL
+SENDGRID_API_KEY
+```
+
+The develompent, and test environment variables should be placed into the following files:
+ * Development - `/config/dev.env`
+ * Test - `/config/test.env`
+
 ## Endpoints
 All endpoints that accepts `POST` and `PATCH` request methods, expect `application/json` content type.
 
