@@ -24,7 +24,7 @@ All endpoints that accepts `POST` and `PATCH` request methods, expect `applicati
 \* - Requires a valid JWT token as an HTTP request header (`Authorization: Bearer <jwt_token>`), which is sent from the authorization endpoints in the response body.
 
 * Authorization
-  * [Create user](#create-user)     - `POST /users`
+  * Create user                     - `POST /users`
   * Login user                      - `POST /users/login`
 * User actions *
   * Logout user                     - `POST /users/logout`
@@ -46,7 +46,7 @@ All endpoints that accepts `POST` and `PATCH` request methods, expect `applicati
   * Update task                     - `PATCH /tasks/:id`
   * Delete task                     - `DELETE /tasks/:id`
 
-### Create user
+### Example route (Create user)
 ----
   Creates a new user in the database.
 * **URL**
